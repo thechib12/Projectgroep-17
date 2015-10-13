@@ -7,13 +7,13 @@ running = True
 size = (700, 500)
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode((1900, 1080), pygame.FULLSCREEN)
 
 cursor_x = 200
 cursor_y = 200
 cursor_color = (0, 0, 0)
 
-pygame.mouse.set_visible(False);
+pygame.mouse.set_visible(False)
 
 
 def cursor_set_cords(x, y):
@@ -40,6 +40,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 shoot()
+            if event.key == pygame.K_ESCAPE:
+                running = False
 
 
     # --- Game logic should go here
