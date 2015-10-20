@@ -1,3 +1,5 @@
+from Cursor import Cursor
+
 __author__ = 'reneb_000'
 import pygame
 
@@ -12,6 +14,11 @@ screen = pygame.display.set_mode((1900, 1080), pygame.FULLSCREEN)
 cursor_x = 200
 cursor_y = 200
 cursor_color = (0, 0, 0)
+
+cursor = Cursor()
+#all sprites classes need to be added to allSprites. This object will draw all the objects
+allSprites = pygame.sprite.Group()
+allSprites.add(cursor)
 
 pygame.mouse.set_visible(False)
 
@@ -42,6 +49,8 @@ while running:
                 shoot()
             if event.key == pygame.K_ESCAPE:
                 running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            shoot()
 
 
     # --- Game logic should go here
@@ -52,9 +61,12 @@ while running:
     # above this, or they will be erased with this command.
     screen.fill((255, 255, 255))
 
-    pos = pygame.mouse.get_pos()
-    cursor_set_cords(pos[0], pos[1])
-    draw_curs(screen, cursor_x, cursor_y, 50, cursor_color)
+    allSprites.update()
+    allSprites.draw(screen)
+
+
+    #cursor_set_cords(pos[0], pos[1])
+    #draw_curs(screen, cursor_x, cursor_y, 50, cursor_color)
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
