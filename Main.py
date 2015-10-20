@@ -1,4 +1,5 @@
 from Cursor import Cursor
+import Zombie
 
 __author__ = 'reneb_000'
 import pygame
@@ -6,7 +7,7 @@ import pygame
 pygame.init
 
 running = True
-size = (700, 500)
+size = (800, 600)
 clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((1900, 1080), pygame.FULLSCREEN)
@@ -19,20 +20,20 @@ cursor = Cursor()
 #all sprites classes need to be added to allSprites. This object will draw all the objects
 allSprites = pygame.sprite.Group()
 allSprites.add(cursor)
+#original zombie is 660 px heigh
+for i in range(1,10):
+    zombie = Zombie.Zombie(198, i*198)
+    allSprites.add(zombie)
+
+
+
+
+zombie = Zombie.Zombie(198, 0)
+allSprites.add(zombie)
 
 pygame.mouse.set_visible(False)
 
 
-def cursor_set_cords(x, y):
-    global cursor_x
-    global cursor_y
-    cursor_x = x
-    cursor_y = y
-
-
-def draw_curs(screen_arg, x, y, width, color):
-    pygame.draw.line(screen_arg, color, [x - width, y], [x + width, y], 5)
-    pygame.draw.line(screen_arg, color, [x, y - width], [x, y + width], 5)
 
 
 def shoot():
@@ -65,13 +66,12 @@ while running:
     allSprites.draw(screen)
 
 
-    #cursor_set_cords(pos[0], pos[1])
-    #draw_curs(screen, cursor_x, cursor_y, 50, cursor_color)
+
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
 
-    # --- Limit to 60 frames per second
+    # --- Limit to 30 frames per second
     clock.tick(30)
 
 pygame.quit()
