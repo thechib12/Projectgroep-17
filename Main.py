@@ -22,16 +22,12 @@ allSprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 allSprites.add(cursor)
 #original zombie is 660 px heigh
-for i in range(1,5):
+for i in range(0, 5):
     zombie = Zombie.Zombie(198, i*198)
     allSprites.add(zombie)
     enemies.add(zombie)
 
 
-
-
-zombie = Zombie.Zombie(198, 0)
-allSprites.add(zombie)
 
 pygame.mouse.set_visible(False)
 
