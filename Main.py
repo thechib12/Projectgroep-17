@@ -19,11 +19,13 @@ cursor_color = (0, 0, 0)
 cursor = Cursor()
 #all sprites classes need to be added to allSprites. This object will draw all the objects
 allSprites = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
 allSprites.add(cursor)
 #original zombie is 660 px heigh
-for i in range(1,10):
+for i in range(1,5):
     zombie = Zombie.Zombie(198, i*198)
     allSprites.add(zombie)
+    enemies.add(zombie)
 
 
 
@@ -37,8 +39,15 @@ pygame.mouse.set_visible(False)
 
 
 def shoot():
-    print("SHOT")
+    for enemy in enemies:
+        pos = pygame.mouse.get_pos()
+        if enemy.hit(pos[0], pos[1]):
+            removeSprite(enemy)
     pass
+
+def removeSprite(spriteobject):
+    allSprites.remove(spriteobject)
+    enemies.remove(spriteobject)
 
 
 while running:

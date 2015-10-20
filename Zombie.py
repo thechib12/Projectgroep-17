@@ -24,3 +24,8 @@ class Zombie(pygame.sprite.Sprite):
         self.sheet.set_clip(pygame.Rect(0, self.index*self.real_height, self.real_width, self.real_height))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect.x += 3
+
+    def hit(self, x, y):
+        if(self.rect.collidepoint(x, y)):
+            return True
+        return False
