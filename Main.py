@@ -7,10 +7,10 @@ import pygame
 pygame.init
 
 running = True
-size = (800, 600)
+size = (1366, 768)
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode((1900, 1080), pygame.FULLSCREEN)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 cursor_x = 200
 cursor_y = 200
@@ -21,7 +21,7 @@ cursor = Cursor()
 allSprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 allSprites.add(cursor)
-#original zombie is 660 px heigh
+# original zombie is 660 px heigh
 for i in range(0, 5):
     zombie = Zombie.Zombie(198, i*198)
     allSprites.add(zombie)
@@ -69,6 +69,7 @@ while running:
 
     allSprites.update()
     allSprites.draw(screen)
+
 
 
 

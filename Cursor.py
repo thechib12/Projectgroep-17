@@ -7,9 +7,9 @@ class Cursor(pygame.sprite.Sprite):
     def __init__(self):
         # init pygame sprite class
         super().__init__()
-        #set the image of the object
+        # set the image of the object
         self.image = pygame.image.load("images/crosshairs/crosshair1.png").convert_alpha()
-        #self.image.fill([0, 0, 0])
+        # self.image.fill([0, 0, 0])
         self.rect = self.image.get_rect()
 
     def setXY(self, x, y):
