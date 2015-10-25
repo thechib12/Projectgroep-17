@@ -1,21 +1,42 @@
+from enum import Enum
 import pygame
 from random import randint
 
 __author__ = 'reneb_000'
+"""
+two legg:
+169x198
+one legg:
+151x201
+no legg:
+139x146
+"""
 
 
 class Zombie(pygame.sprite.Sprite):
-    def __init__(self, own_height, y):
+    def __init__(self, two_leg, one_leg, no_leg, y):
         # init pygame sprite class
         super().__init__()
 
+        # init zombie data
+        self.state = State.twoLeg
+        self.speed = 2
+
+
         # load the sheets
+        """
         self.sheet_normal = pygame.image.load("images/enemies/zombie3.png")
-        self.sheet_one_legg = pygame.image.load("images/enemies/one_legg.png")
-        self.sheet = pygame.image.load("images/enemies/zombie3.png")
+        self.sheet_one_leg = pygame.image.load("images/enemies/one_leg.png")
+        self.sheet_no_leg = pygame.image.load("images/enemies/no_leg.png")
+        self.sheet = self.sheet_normal
+        """
+        self.sheet_normal = two_leg
+        self.sheet_one_leg = one_leg
+        self.sheet_no_leg = no_leg
+        self.sheet = self.sheet_normal
 
         # calculate the real height en width of sprite (the size on screen)
-        self.real_height = own_height
+        self.real_height = 198
         self.real_width = self.sheet.get_rect().width
 
         # frame index calculation
@@ -36,17 +57,35 @@ class Zombie(pygame.sprite.Sprite):
         self.index = (self.index + 1) % self.max_index
         self.sheet.set_clip(pygame.Rect(0, self.index * self.real_height, self.real_width, self.real_height))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
-        self.rect.x += 3
+        self.rect.x += self.speed
 
     def hit(self, x, y):
         if self.rect.collidepoint(x, y):
             if (y - self.rect.y) > self.real_height * .6:
-                self.set_image_legg_less()
+                self.set_image_leg_less()
                 return False
             return True
         return False
 
-    def set_image_legg_less(self):
-        self.sheet = self.sheet_one_legg
-        self.real_height = 221
-        # TODO animations allemaal even hoog en dezelfde verkleiningsfactor
+    def set_image_leg_less(self):
+        if self.state == State.twoLeg:
+            self.sheet = self.sheet_one_leg
+            self.real_height = 201
+            self.state = State.oneLeg
+            self.calcNewCord([169, 198], [151, 201])
+        elif self.state == State.oneLeg:
+            self.sheet = self.sheet_no_leg
+            self.real_height = 146
+            self.speed = 1
+            self.calcNewCord([151, 201], [139, 146])
+
+# fix for the origin problem in pygame, if you change the sprites without calling this function, the sprite "jumps" on screen
+    def calcNewCord(self, old, new):
+        self.rect.x += (old[0] - new[0]) / 2
+        self.rect.y += (old[1] - new[1])
+
+
+class State(Enum):
+    twoLeg = 0
+    oneLeg = 1
+    noLeg = 2

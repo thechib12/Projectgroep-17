@@ -8,7 +8,7 @@ class Cursor(pygame.sprite.Sprite):
         # init pygame sprite class
         super().__init__()
         # set the image of the object
-        self.image = pygame.image.load("images/crosshairs/crosshair1.png").convert_alpha()
+        self.image = pygame.image.load("resources/images/crosshairs/crosshair1.png").convert_alpha()
         # self.image.fill([0, 0, 0])
         self.rect = self.image.get_rect()
 
@@ -19,4 +19,7 @@ class Cursor(pygame.sprite.Sprite):
     def update(self):
         pos = pygame.mouse.get_pos()
         self.setXY(pos[0], pos[1])
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
