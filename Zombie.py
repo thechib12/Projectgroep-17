@@ -14,7 +14,12 @@ no legg:
 
 
 class Zombie(pygame.sprite.Sprite):
-    def __init__(self, two_leg, one_leg, no_leg, y):
+
+    zombie_sheet_normal = pygame.image.load("resources/images/enemies/zombie3.png")
+    zombie_sheet_one_leg = pygame.image.load("resources/images/enemies/one_leg.png")
+    zombie_sheet_no_leg = pygame.image.load("resources/images/enemies/no_leg.png")
+
+    def __init__(self, y):
         # init pygame sprite class
         super().__init__()
 
@@ -30,9 +35,9 @@ class Zombie(pygame.sprite.Sprite):
         self.sheet_no_leg = pygame.image.load("images/enemies/no_leg.png")
         self.sheet = self.sheet_normal
         """
-        self.sheet_normal = two_leg
-        self.sheet_one_leg = one_leg
-        self.sheet_no_leg = no_leg
+        self.sheet_normal = self.zombie_sheet_normal
+        self.sheet_one_leg = self.zombie_sheet_one_leg
+        self.sheet_no_leg = self.zombie_sheet_no_leg
         self.sheet = self.sheet_normal
 
         # calculate the real height en width of sprite (the size on screen)
@@ -51,6 +56,7 @@ class Zombie(pygame.sprite.Sprite):
 
         # rectangle creation and setting of coordinates
         self.rect = self.image.get_rect()
+        self.rect.x = - self.rect.width
         self.rect.y = y
 
     def update(self):

@@ -1,6 +1,5 @@
 from Cursor import Cursor
 from Level import Level
-import Zombie
 import pygame
 
 
@@ -9,59 +8,26 @@ def main():
     pygame.init
 
     running = True
-    size = (1366, 768)
+    size = (1920, 1080)
     clock = pygame.time.Clock()
 
     screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-    # load all images
-    zombie_sheet_normal = pygame.image.load("resources/images/enemies/zombie3.png")
-    zombie_sheet_one_leg = pygame.image.load("resources/images/enemies/one_leg.png")
-    zombie_sheet_no_leg = pygame.image.load("resources/images/enemies/no_leg.png")
-
     level = Level(10)
-    fontSize = 50
-    textColor = (0, 0, 0)
-    font = pygame.font.init()
-    font = pygame.font.Font("resources/fonts/Lato-Regular.ttf", fontSize)
-    level_remaining = level.getRemaining()
-    texttest = font.render("Remaining: " + str(level_remaining), True, textColor)
 
     cursor = Cursor()
-    # all sprites classes need to be added to allSprites. This object will draw all the objects
-    allSprites = pygame.sprite.Group()
-    enemies = pygame.sprite.Group()
-    # allSprites.add(cursor)
-    # original zombie is 660 px height
-    """
-    for i in range(0, 5):
-        zombie = Zombie.Zombie(zombie_sheet_normal, zombie_sheet_one_leg, zombie_sheet_no_leg, i*198)
-        allSprites.add(zombie)
-        enemies.add(zombie)
-    """
-
 
     pygame.mouse.set_visible(False)
 
+    background = pygame.image.load("resources/images/background.png").convert()
 
 
     def shoot():
-        for enemy in enemies:
-            pos = pygame.mouse.get_pos()
-            if enemy.hit(pos[0], pos[1]):
-                removeSprite(enemy)
-        pass
+        pos = pygame.mouse.get_pos()
+        level.shoot(pos[0], pos[1])
 
 
-    def removeSprite(spriteobject):
-        allSprites.remove(spriteobject)
-        enemies.remove(spriteobject)
-
-    def addZombie(y):
-        zombie = Zombie.Zombie(zombie_sheet_normal, zombie_sheet_one_leg, zombie_sheet_no_leg, y)
-        allSprites.add(zombie)
-        enemies.add(zombie)
-
+    """ Game Loop """
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -75,23 +41,15 @@ def main():
                 shoot()
 
 
-        """ Updates """
-        returnVal = level.update()
-        if returnVal > 0:
-            addZombie(returnVal)
-        if level_remaining != level.getRemaining():
-            texttest = font.render("Remaining: " + str(level.getRemaining()), fontSize, textColor)
-        allSprites.update()
+
+        level.update()
         cursor.update()
 
         """ Draws """
         screen.fill((255, 255, 255))
-        screen.blit(texttest, (0, 0))
-        allSprites.draw(screen)
+        screen.blit(background, (0, 0))
+        level.draw(screen)
         cursor.draw(screen)
-
-
-
 
 
         # --- Go ahead and update the screen with what we've drawn.
@@ -99,7 +57,6 @@ def main():
 
         # --- Limit to 30 frames per second
         clock.tick(30)
-
 
 
 
