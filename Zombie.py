@@ -4,41 +4,44 @@ from random import randint
 
 __author__ = 'reneb_000'
 """
+1e = loop animatie
+2e = attack animatie
 two legg:
 169x198
+122x189
 one legg:
 151x201
+122x186
 no legg:
 139x146
+122x153
 """
 
 
 class Zombie(pygame.sprite.Sprite):
 
-    zombie_sheet_normal = pygame.image.load("resources/images/enemies/zombie3.png")
+    zombie_sheet_two_leg = pygame.image.load("resources/images/enemies/normal.png")
     zombie_sheet_one_leg = pygame.image.load("resources/images/enemies/one_leg.png")
     zombie_sheet_no_leg = pygame.image.load("resources/images/enemies/no_leg.png")
 
-    def __init__(self, y):
+    zombie_sheet_attack_two_leg = pygame.image.load("resources/images/enemies/attack_normal.png")
+    zombie_sheet_attack_one_leg = pygame.image.load("resources/images/enemies/attack_one_leg.png")
+    zombie_sheet_attack_no_leg = pygame.image.load("resources/images/enemies/attack_no_leg.png")
+
+    def __init__(self, y, layer):
         # init pygame sprite class
         super().__init__()
 
         # init zombie data
         self.state = State.twoLeg
         self.speed = 2
+        self.layer = layer
+        self.attacking = False
 
-
-        # load the sheets
-        """
-        self.sheet_normal = pygame.image.load("images/enemies/zombie3.png")
-        self.sheet_one_leg = pygame.image.load("images/enemies/one_leg.png")
-        self.sheet_no_leg = pygame.image.load("images/enemies/no_leg.png")
-        self.sheet = self.sheet_normal
-        """
-        self.sheet_normal = self.zombie_sheet_normal
+        self.sheet_two_leg = self.zombie_sheet_two_leg
         self.sheet_one_leg = self.zombie_sheet_one_leg
         self.sheet_no_leg = self.zombie_sheet_no_leg
-        self.sheet = self.sheet_normal
+        self.sheet = self.sheet_two_leg
 
         # calculate the real height en width of sprite (the size on screen)
         self.real_height = 198
@@ -64,6 +67,8 @@ class Zombie(pygame.sprite.Sprite):
         self.sheet.set_clip(pygame.Rect(0, self.index * self.real_height, self.real_width, self.real_height))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect.x += self.speed
+        if self.rect.x >= 1250 - (2 - self.layer * self.real_width) and not self.attacking:
+            self.set_attacking()
 
     def hit(self, x, y):
         if self.rect.collidepoint(x, y):
@@ -74,24 +79,48 @@ class Zombie(pygame.sprite.Sprite):
         return False
 
     def set_image_leg_less(self):
-        if self.state == State.twoLeg:
-            self.sheet = self.sheet_one_leg
-            self.real_height = 201
-            self.state = State.oneLeg
-            self.calcNewCord([169, 198], [151, 201])
-        elif self.state == State.oneLeg:
-            self.sheet = self.sheet_no_leg
-            self.real_height = 146
-            self.speed = 1
-            self.calcNewCord([151, 201], [139, 146])
+        if not self.attacking:
+            if State.twoLeg == self.state:
+                self.set_new_sprite_values(State.oneLeg, self.real_width, self.real_height, 151, 201, self.zombie_sheet_one_leg, -1)
+            elif State.oneLeg == self.state:
+                self.set_new_sprite_values(State.noLeg, self.real_width, self.real_height, 139, 146, self.zombie_sheet_no_leg, 1)
+        else:
+            if State.twoLeg == self.state:
+                self.set_new_sprite_values(State.oneLeg, self.real_width, self.real_height, 122, 186, self.zombie_sheet_attack_one_leg, 0)
+            elif State.oneLeg == self.state:
+                self.set_new_sprite_values(State.noLeg, self.real_width, self.real_height, 122, 153, self.zombie_sheet_attack_no_leg, 0)
+
+    def set_attacking(self):
+        # TODO jumping of sprite fix
+        self.attacking = True
+        if State.twoLeg == self.state:
+            self.set_new_sprite_values(State.twoLeg, self.real_width, self.real_height, 122, 189, self.zombie_sheet_attack_two_leg, 0)
+        elif State.oneLeg == self.state:
+            self.set_new_sprite_values(State.oneLeg, self.real_width, self.real_height, 122, 186, self.zombie_sheet_attack_one_leg, 0)
+        elif State.noLeg == self.state:
+            self.set_new_sprite_values(State.noLeg, self.real_width, self.real_height, 122, 153, self.zombie_sheet_attack_no_leg, 0)
+
+    def set_new_sprite_values(self, newState, oldWidth, oldHeight, newWidth, newHeight, newSheet, newSpeed):
+        self.state = newState
+        self.sheet = newSheet
+        self.real_height = newHeight
+        self.real_width = newWidth
+        if not newSpeed == -1:
+            self.speed = newSpeed
+        self.calcNewCord([oldWidth, oldHeight], [newWidth, newHeight])
+        pass
 
 # fix for the origin problem in pygame, if you change the sprites without calling this function, the sprite "jumps" on screen
     def calcNewCord(self, old, new):
         self.rect.x += (old[0] - new[0]) / 2
         self.rect.y += (old[1] - new[1])
 
+    def getLayer(self):
+        return self.layer
+
 
 class State(Enum):
     twoLeg = 0
     oneLeg = 1
     noLeg = 2
+
