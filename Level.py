@@ -34,7 +34,7 @@ class Level:
         self.enemies = [pygame.sprite.Group(), pygame.sprite.Group(), pygame.sprite.Group()]
         self.stand = pygame.sprite.GroupSingle(self.stand)
         self.stains = pygame.sprite.Group()
-
+#TODO built table and draw it when game over
 
 
     def update(self):
@@ -249,6 +249,31 @@ class Button(pygame.sprite.Sprite):
                 self.level.replay()
             if ButtonType.exit == self.type:
                 pygame.quit()
+
+class TextGrid():
+
+    desc_width = 200
+    elem_width = 100
+    cell_height = 30
+    fnt_color = (0, 0, 0)
+
+    def __init__(self, font, x, y):
+        self.font = font
+        self.array = []
+        self.addRow("desc", "Your score", "Highscore")
+        self.x = x
+        self.y = y
+
+    def addRow(self, desc, ownScore, highScore):
+        self.array.append([self.getFont(desc), self.getFont(ownScore), self.getFont(highScore)])
+
+    def getFont(self, text):
+        return self.font.render(text, True, fnt_color)
+
+    def draw(self, screen):
+        for i in range(0, len(self.array) - 1):
+            for x in range(0, len(self.array[i]) - 1):
+                screen.blit(self.array[i][x], [self.x + 0 if x==0 else self.x + self.desc_width + (x-1)*self.elem_width,self.y + self.cell_height*i])
 
 
 class PopupType(Enum):
