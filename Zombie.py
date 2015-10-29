@@ -43,6 +43,11 @@ class Zombie(pygame.sprite.Sprite):
     zombie_sheet_dead_no_leg = pygame.image.load("resources/images/enemies/dead_no_leg.png").convert()
     zombie_sheet_dead_no_leg.set_colorkey((255, 255, 255))
 
+    sound = []
+    for i in range(1, 5):
+        sound.append(pygame.mixer.Sound("resources/sounds/enemy/sound" + str(i) + ".ogg"))
+        sound[i-1].set_volume(0.5)
+
     def __init__(self, y, layer, levelobj):
         # init pygame sprite class
         super().__init__()
@@ -50,6 +55,8 @@ class Zombie(pygame.sprite.Sprite):
 
         # init zombie data
         self.attacks_per_sec = 1
+        self.soundscount = 0
+        self.max_soundcount = 80
         self.frame_counter = 0
         self.state = State.twoLeg
         self.speed = 2
@@ -88,6 +95,9 @@ class Zombie(pygame.sprite.Sprite):
             self.sheet.set_clip(pygame.Rect(0, self.index * self.real_height, self.real_width, self.real_height))
             self.image = self.sheet.subsurface(self.sheet.get_clip())
             self.rect.x += self.speed
+            self.soundscount = (self.soundscount + 1) % self.max_soundcount
+            if self.soundscount == 0:
+                self.sound[randint(0, len(self.sound) - 1)].play()
         else:
             if self.index + 1 == self.max_index:
                 alpha = self.image.get_alpha()
@@ -102,12 +112,13 @@ class Zombie(pygame.sprite.Sprite):
 
         if self.rect.x >= 1250 - (2 - self.layer * self.real_width) and not self.attacking:
             self.set_attacking()
+
         if self.attacking and self.frame_counter == 0:
             self.level.decrease_health(1)
 
     def hit(self, x, y):
         if self.rect.collidepoint(x, y) and not self.dead:
-            if (y - self.rect.y) > self.real_height * .6:
+            if not self.state == State.noLeg and (y - self.rect.y) > self.real_height * .6:
                 self.set_image_leg_less()
                 # return False
             else:

@@ -1,6 +1,12 @@
+from enum import Enum
 from Cursor import Cursor
 from Level import Level
 import pygame
+
+
+class GameState(Enum):
+    mainmenu = 0
+    running = 1
 
 
 def main():
@@ -20,14 +26,12 @@ def main():
     pygame.mouse.set_visible(False)
 
     background = pygame.image.load("resources/images/background.png").convert()
-
+    gamestate = GameState.running
 
 
 
     def shoot():
-
         pos = cursor.getXY()
-
         level.shoot(pos[0], pos[1])
         cursor.shoot()
 
@@ -39,7 +43,8 @@ def main():
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    shoot()
+                    #shoot()
+                    level.decrease_health(100)
                 if event.key == pygame.K_ESCAPE:
                     running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -53,7 +58,13 @@ def main():
         """ Draws """
         screen.fill((255, 255, 255))
         screen.blit(background, (0, 0))
-        level.draw(screen)
+
+        if GameState.mainmenu == gamestate:
+            pass
+        elif GameState.running == gamestate:
+            level.draw(screen)
+            pass
+
         cursor.draw(screen)
 
 

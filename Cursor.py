@@ -9,6 +9,7 @@ class Cursor(pygame.sprite.Sprite):
         super().__init__()
         # set the image of the object
         self.image = pygame.image.load("resources/images/crosshairs/crosshair1.png").convert_alpha()
+        self.sound = pygame.mixer.Sound("resources/sounds/pistol.ogg")
         # self.image.fill([0, 0, 0])
         self.rect = self.image.get_rect()
         self.shot = False
@@ -35,5 +36,8 @@ class Cursor(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def shoot(self):
+        self.sound.play()
         self.shot = True
         self.recoil += 100
+
+
