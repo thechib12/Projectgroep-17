@@ -22,9 +22,14 @@ def main():
     background = pygame.image.load("resources/images/background.png").convert()
 
 
+
+
     def shoot():
-        pos = pygame.mouse.get_pos()
+
+        pos = cursor.getXY()
+
         level.shoot(pos[0], pos[1])
+        cursor.shoot()
 
 
     """ Game Loop """
