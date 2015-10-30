@@ -8,7 +8,7 @@ class Cursor(pygame.sprite.Sprite):
         # init pygame sprite class
         super().__init__()
         # set the image of the object
-        self.image = pygame.image.load("resources/images/crosshairs/crosshair1.png").convert_alpha()
+        self.image = pygame.image.load("resources/images/crosshairs/crosshair0.png").convert_alpha()
         self.sound = pygame.mixer.Sound("resources/sounds/pistol.ogg")
         # self.image.fill([0, 0, 0])
         self.rect = self.image.get_rect()

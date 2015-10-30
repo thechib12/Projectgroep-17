@@ -2,11 +2,14 @@ import datetime
 from random import randint
 
 import pygame
+from GameState import *
+
 from SharedPreference import SharedPreference
 
 from Stand import Stand
 from Zombie import *
 from Popup import *
+
 
 fnt_size = 50
 fnt_color = (0, 0, 0)
@@ -21,7 +24,6 @@ class Level:
         self.wave = 1
         self.health_max = 100
         self.health = self.health_max
-
         #Stats
         self.game_zombies_killed = 0
         self.game_legs_shot_off = 0
@@ -166,7 +168,11 @@ class Level:
         popup.addRow("Shots fired", self.game_headshots, pref.loadHighscore("game_shotsfired", -1))
         timeplayed = datetime.datetime.now().replace(microsecond=0) - self.game_time
         popup.addRow("Time played", timeplayed, pref.loadHighscore("game_timeplayed", -1))
-        precision = round(self.game_hitcount/self.game_shotsfired*100, 2)
+        if self.game_shotsfired > 0:
+            precision = round(self.game_hitcount/self.game_shotsfired*100, 2)
+        else:
+            precision = 0
+
         popup.addRow("Accuracy", precision, pref.loadHighscore("game_precision", -1))
 
         pref.writeHighscore("game_wave", self.wave)
@@ -247,24 +253,34 @@ class Popup():
 
     fnt_normal = pygame.font.Font("resources/fonts/Lato-Regular.ttf", 25)
 
-    def __init__(self, type, level):
-        self.level = level
+    def __init__(self, type, controller):
+        self.level = controller
         self.x = (1920-self.back.get_rect().width)/2
         self.y = (1080-self.back.get_rect().height)/2
         self.todraw = []
         self.buttons = []
-        self.textGrid = TextGrid(self.fnt_normal, self.x + self.back_dimen[0]/10, self.y + self.btn_dimen[1])
+        self.type = type
         if PopupType.gameover == type:
             self.txt_title = textOutline(self.font_title, "Game Over", (255, 255, 255), (27, 70, 32))
             self.txt_title_pos = [self.x + (self.back.get_rect().width - self.txt_title.get_rect().width)/2, self.y + 40]
-            self.buttons.append(Button(ButtonType.replay, self.font_title, self.x, self.y + self.back_dimen[1] - self.btn_dimen[1]/2, level))
-            self.buttons.append(Button(ButtonType.exit, self.font_title, self.x + self.back_dimen[0] - self.btn_dimen[0], self.y + self.back_dimen[1] - self.btn_dimen[1]/2, level))
+            self.buttons.append(Button(ButtonType.replay, self.font_title, self.x, self.y + self.back_dimen[1] - self.btn_dimen[1]/2, controller))
+            self.buttons.append(Button(ButtonType.exit, self.font_title, self.x + self.back_dimen[0] - self.btn_dimen[0], self.y + self.back_dimen[1] - self.btn_dimen[1]/2, controller))
+            self.textGrid = TextGrid(self.fnt_normal, self.x + self.back_dimen[0]/10, self.y + self.btn_dimen[1])
+        if PopupType.mainmenu == type:
+            self.txt_title = textOutline(self.font_title, "Menu", (255, 255, 255), (27, 70, 32))
+            self.txt_title_pos = [self.x + (self.back.get_rect().width - self.txt_title.get_rect().width)/2, self.y + 40]
+            self.buttons.append(Button(ButtonType.exit, self.font_title, self.x + (self.back_dimen[0] - self.btn_dimen[0])/2, self.y + self.back_dimen[1] - self.btn_dimen[1]/2, controller))
+            self.buttons.append(Button(ButtonType.play, self.font_title, self.x + (self.back_dimen[0] - self.btn_dimen[0])/2, self.y + (self.back_dimen[1] - self.btn_dimen[1])/2, controller))
+            self.buttons.append(Button(ButtonType.shop, self.font_title, self.x + (self.back_dimen[0] - self.btn_dimen[0])/2, self.y + self.back_dimen[1]/3*2 - self.btn_dimen[1]/4, controller))
 
 
     def draw(self, screen):
         screen.blit(self.back, [self.x, self.y])
         screen.blit(self.txt_title, self.txt_title_pos)
-        self.textGrid.draw(screen)
+        if PopupType.gameover == self.type:
+            self.textGrid.draw(screen)
+        elif PopupType.mainmenu == self.type:
+            pass
         for i in self.buttons:
             i.draw(screen)
 
@@ -288,10 +304,16 @@ class Button(pygame.sprite.Sprite):
         self.rect.y = y
         self.type = type
         self.level = level
+
         if ButtonType.replay == type:
             self.txt = textOutline(font, "Replay", (255, 255, 255), (27, 70, 32))
         elif ButtonType.exit == type:
             self.txt = textOutline(font, "Exit", (255, 255, 255), (27, 70, 32))
+        elif ButtonType.play == type:
+            self.txt = textOutline(font, "Play", (255, 255, 255), (27, 70, 32))
+        elif ButtonType.shop == type:
+            self.txt = textOutline(font, "Shop", (255, 255, 255), (27, 70, 32))
+
         self.txt_pos = [self.rect.x + (self.back.get_rect().width - self.txt.get_rect().width)/2, self.rect.y +(self.back.get_rect().height - self.txt.get_rect().height)/2]
 
     def draw(self, screen):
@@ -304,6 +326,10 @@ class Button(pygame.sprite.Sprite):
                 self.level.replay()
             if ButtonType.exit == self.type:
                 pygame.quit()
+            if ButtonType.play == self.type:
+                self.level.setState(GameStateEnum.running)
+            if ButtonType.shop == self.type:
+                self.level.setState(GameStateEnum.shop)
 
 class TextGrid():
 
@@ -334,8 +360,11 @@ class TextGrid():
 
 class PopupType(Enum):
     gameover = 0
+    mainmenu = 1
 
 
 class ButtonType(Enum):
     replay = 0
     exit = 1
+    play = 2
+    shop = 3
