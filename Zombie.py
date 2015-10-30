@@ -120,11 +120,14 @@ class Zombie(pygame.sprite.Sprite):
         if self.rect.collidepoint(x, y) and not self.dead:
             if not self.state == State.noLeg and (y - self.rect.y) > self.real_height * .6:
                 self.set_image_leg_less()
-                # return False
+                return HitType.legshot
+            elif (y - self.rect.y) < self.real_height / 3 :
+                self.set_dead()
+                return HitType.headshot
             else:
                 self.set_dead()
-            return True
-        return False
+            return HitType.chest
+        return HitType.miss
 
     def set_image_leg_less(self):
         if not self.attacking:
@@ -184,3 +187,8 @@ class State(Enum):
     oneLeg = 1
     noLeg = 2
 
+class HitType(Enum):
+    miss = 0
+    legshot = 1
+    headshot = 2
+    chest = 3

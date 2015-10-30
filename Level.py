@@ -1,9 +1,11 @@
+import datetime
 from random import randint
 
 import pygame
+from SharedPreference import SharedPreference
 
 from Stand import Stand
-from Zombie import Zombie
+from Zombie import *
 from Popup import *
 
 fnt_size = 50
@@ -20,6 +22,13 @@ class Level:
         self.health_max = 100
         self.health = self.health_max
 
+        #Stats
+        self.game_zombies_killed = 0
+        self.game_legs_shot_off = 0
+        self.game_headshots = 0
+        self.game_shotsfired = 0
+        self.game_time = datetime.datetime.now().replace(microsecond=0)
+
         self.paused = False
         self.game_over = False
 
@@ -34,8 +43,6 @@ class Level:
         self.enemies = [pygame.sprite.Group(), pygame.sprite.Group(), pygame.sprite.Group()]
         self.stand = pygame.sprite.GroupSingle(self.stand)
         self.stains = pygame.sprite.Group()
-#TODO built table and draw it when game over
-
 
     def update(self):
         if not self.paused:
@@ -74,13 +81,20 @@ class Level:
 
     def shoot(self, x, y):
         if not self.paused:
+            self.game_shotsfired += 1
             for i in [self.enemies[2], self.enemies[1], self.enemies[0]]:
                 for enemy in i:
-                    if enemy.hit(x, y):
-                        # self.enemies[enemy.getLayer()].remove(enemy)
+                    case = enemy.hit(x, y)
+                    if not case == HitType.miss:
+                        if HitType.headshot == case:
+                            self.game_headshots += 1
+                            pass
+                        elif HitType.legshot == case:
+                            self.game_legs_shot_off += 1
+                            pass
+                        self.game_zombies_killed += 1
                         self.stains.add(BloodStain(self))
                         return
-                        # self.allSprites.remove(enemy)
         else:
             self.popup.click(x, y)
 
@@ -117,6 +131,7 @@ class Level:
             self.paused = True
             self.game_over = True
             self.popup = Popup(PopupType.gameover, self)
+            self.addRowsToPopup(self.popup)
         else:
             self.health -= value
 
@@ -128,7 +143,32 @@ class Level:
         self.wave = 1
         self.enemies = [pygame.sprite.Group(), pygame.sprite.Group(), pygame.sprite.Group()]
         self.stains = pygame.sprite.Group()
+        self.resetStats()
 
+    def resetStats(self):
+        self.game_zombies_killed = 0
+        self.game_legs_shot_off = 0
+        self.game_headshots = 0
+        self.game_shotsfired = 0
+        self.game_time = datetime.datetime.now().replace(microsecond=0)
+
+    def addRowsToPopup(self, popup):
+        pref = SharedPreference()
+        popup.addRow("Wave reached", self.wave, pref.loadHighscore("game_wave", -1))
+        popup.addRow("Zombies killed", self.game_zombies_killed, pref.loadHighscore("game_killed", -1))
+        popup.addRow("Legs shot off", self.game_legs_shot_off, pref.loadHighscore("game_legs", -1))
+        popup.addRow("Headshots", self.game_headshots, pref.loadHighscore("game_headshots", -1))
+        popup.addRow("Shots fired", self.game_headshots, pref.loadHighscore("game_shotsfired", -1))
+        timeplayed = datetime.datetime.now().replace(microsecond=0) - self.game_time
+        popup.addRow("Time played", timeplayed, pref.loadHighscore("game_timeplayed", -1))
+
+        pref.writeHighscore("game_wave", self.wave)
+        pref.writeHighscore("game_killed", self.game_zombies_killed)
+        pref.writeHighscore("game_legs", self.game_legs_shot_off)
+        pref.writeHighscore("game_headshots", self.game_headshots)
+        pref.writeHighscore("game_shotsfired", self.game_shotsfired)
+        pref.writeHighscore("game_timeplayed", timeplayed)
+        pref.commit()
 
 
 class BloodStain(pygame.sprite.Sprite):
@@ -197,12 +237,15 @@ class Popup():
     btn_back = pygame.image.load("resources/images/menu/button.png")
     btn_dimen = [btn_back.get_rect().width, btn_back.get_rect().height]
 
+    fnt_normal = pygame.font.Font("resources/fonts/Lato-Regular.ttf", 25)
+
     def __init__(self, type, level):
         self.level = level
         self.x = (1920-self.back.get_rect().width)/2
         self.y = (1080-self.back.get_rect().height)/2
         self.todraw = []
         self.buttons = []
+        self.textGrid = TextGrid(self.fnt_normal, self.x + self.back_dimen[0]/10, self.y + self.btn_dimen[1])
         if PopupType.gameover == type:
             self.txt_title = textOutline(self.font_title, "Game Over", (255, 255, 255), (27, 70, 32))
             self.txt_title_pos = [self.x + (self.back.get_rect().width - self.txt_title.get_rect().width)/2, self.y + 40]
@@ -213,12 +256,16 @@ class Popup():
     def draw(self, screen):
         screen.blit(self.back, [self.x, self.y])
         screen.blit(self.txt_title, self.txt_title_pos)
+        self.textGrid.draw(screen)
         for i in self.buttons:
             i.draw(screen)
 
     def click(self, x, y):
         for i in self.buttons:
             i.click(x, y)
+
+    def addRow(self, desc, ownScore, highscore):
+        self.textGrid.addRow(desc, ownScore, highscore)
 
 
 class Button(pygame.sprite.Sprite):
@@ -253,14 +300,15 @@ class Button(pygame.sprite.Sprite):
 class TextGrid():
 
     desc_width = 200
-    elem_width = 100
+    elem_width = 200
     cell_height = 30
     fnt_color = (0, 0, 0)
 
     def __init__(self, font, x, y):
         self.font = font
         self.array = []
-        self.addRow("desc", "Your score", "Highscore")
+        self.addRow("", "Your score", "Highscore")
+        self.addRow("", "", "")
         self.x = x
         self.y = y
 
@@ -268,11 +316,11 @@ class TextGrid():
         self.array.append([self.getFont(desc), self.getFont(ownScore), self.getFont(highScore)])
 
     def getFont(self, text):
-        return self.font.render(text, True, fnt_color)
+        return self.font.render(str(text), True, fnt_color)
 
     def draw(self, screen):
-        for i in range(0, len(self.array) - 1):
-            for x in range(0, len(self.array[i]) - 1):
+        for i in range(0, len(self.array)):
+            for x in range(0, len(self.array[i])):
                 screen.blit(self.array[i][x], [self.x + 0 if x==0 else self.x + self.desc_width + (x-1)*self.elem_width,self.y + self.cell_height*i])
 
 
