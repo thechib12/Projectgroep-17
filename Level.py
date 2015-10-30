@@ -28,6 +28,7 @@ class Level:
         self.game_headshots = 0
         self.game_shotsfired = 0
         self.game_time = datetime.datetime.now().replace(microsecond=0)
+        self.game_hitcount = 0
 
         self.paused = False
         self.game_over = False
@@ -88,12 +89,16 @@ class Level:
                     if not case == HitType.miss:
                         if HitType.headshot == case:
                             self.game_headshots += 1
+                            self.game_zombies_killed += 1
+                            pass
+                        elif HitType.chest == case:
+                            self.game_zombies_killed += 1
                             pass
                         elif HitType.legshot == case:
                             self.game_legs_shot_off += 1
                             pass
-                        self.game_zombies_killed += 1
                         self.stains.add(BloodStain(self))
+                        self.game_hitcount += 1
                         return
         else:
             self.popup.click(x, y)
@@ -161,6 +166,8 @@ class Level:
         popup.addRow("Shots fired", self.game_headshots, pref.loadHighscore("game_shotsfired", -1))
         timeplayed = datetime.datetime.now().replace(microsecond=0) - self.game_time
         popup.addRow("Time played", timeplayed, pref.loadHighscore("game_timeplayed", -1))
+        precision = round(self.game_hitcount/self.game_shotsfired*100, 2)
+        popup.addRow("Accuracy", precision, pref.loadHighscore("game_precision", -1))
 
         pref.writeHighscore("game_wave", self.wave)
         pref.writeHighscore("game_killed", self.game_zombies_killed)
@@ -168,6 +175,7 @@ class Level:
         pref.writeHighscore("game_headshots", self.game_headshots)
         pref.writeHighscore("game_shotsfired", self.game_shotsfired)
         pref.writeHighscore("game_timeplayed", timeplayed)
+        pref.writeHighscore("game_precision", precision)
         pref.commit()
 
 
