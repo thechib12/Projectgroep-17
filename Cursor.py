@@ -40,4 +40,7 @@ class Cursor(pygame.sprite.Sprite):
         self.shot = True
         self.recoil += 100
 
+    def set_image(self, image):
+        self.image = image
+
 

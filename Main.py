@@ -4,7 +4,7 @@ from GameState import *
 
 from Level import Level, Popup, PopupType
 import pygame
-
+from ShopEntry import Shop
 
 pygame.init
 
@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-level = Level(10)
+
 
 cursor = Cursor()
 
@@ -25,7 +25,9 @@ pygame.mouse.set_visible(False)
 
 background = pygame.image.load("resources/images/background.png").convert()
 gamestate = GameState(GameStateEnum.mainmenu)
-popup = Popup(PopupType.mainmenu, gamestate)
+level = Level(10, gamestate)
+popup = Popup(PopupType.mainmenu, level, gamestate)
+shop = Shop(cursor, gamestate)
 
 
 def shoot():
@@ -34,6 +36,8 @@ def shoot():
         popup.click(pos[0], pos[1])
     elif GameStateEnum.running == gamestate.getState():
         level.shoot(pos[0], pos[1])
+    elif GameStateEnum.shop == gamestate.getState():
+        shop.click(pos[0], pos[1])
     cursor.shoot()
 
 
@@ -71,6 +75,11 @@ while running:
         """ Draw """
         level.draw(screen)
         pass
+    elif GameStateEnum.shop == gamestate.getState():
+        """ Upfdate """
+
+        """ Draw """
+        shop.draw(screen)
 
     cursor.draw(screen)
 

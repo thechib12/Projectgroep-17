@@ -69,6 +69,8 @@ class Zombie(pygame.sprite.Sprite):
         self.sheet_no_leg = self.zombie_sheet_no_leg
         self.sheet = self.sheet_two_leg
 
+        self.sound_threshold = randint(0, self.max_soundcount)
+
         # calculate the real height en width of sprite (the size on screen)
         self.real_height = 198
         self.real_width = self.sheet.get_rect().width
@@ -96,7 +98,7 @@ class Zombie(pygame.sprite.Sprite):
             self.image = self.sheet.subsurface(self.sheet.get_clip())
             self.rect.x += self.speed
             self.soundscount = (self.soundscount + 1) % self.max_soundcount
-            if self.soundscount == 0:
+            if self.soundscount == self.sound_threshold:
                 self.sound[randint(0, len(self.sound) - 1)].play()
         else:
             if self.index + 1 == self.max_index:
