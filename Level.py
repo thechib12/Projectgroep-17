@@ -4,7 +4,7 @@ from random import randint
 import pygame
 from GameState import *
 
-from SharedPreference import SharedPreference
+from SharedPreference import SharedPreference, Settings
 
 from Stand import Stand
 from Zombie import *
@@ -56,7 +56,7 @@ class Level:
             random = randint(0, 30)
             if self.count > 0 and random == 1:
                 self.count -= 1
-                # self.txt_remaining = self.font.render("Wave remaining: " + str(self.count), True, fnt_color)
+                self.txt_remaining = self.font.render("Wave remaining: " + str(self.count), True, fnt_color)
                 rand = randint(0, 2)
                 val = rand * 130 + 500
                 zombie = Zombie(val, rand, self)
@@ -65,8 +65,8 @@ class Level:
                 self.wave += 1
                 self.count = 10 * self.wave
                 # TODO betere curve voor zombiespawn
-                # self.txt_remaining = self.font.render("Wave remaining: " + str(self.count), True, fnt_color)
-                # self.txt_wave = self.font.render("Wave number: " + str(self.wave), True, fnt_color)
+                self.txt_remaining = self.font.render("Wave remaining: " + str(self.count), True, fnt_color)
+                self.txt_wave = self.font.render("Wave number: " + str(self.wave), True, fnt_color)
         else:
             pass #TODO pause menu???
 
@@ -101,7 +101,8 @@ class Level:
                         elif HitType.legshot == case:
                             self.game_legs_shot_off += 1
                             pass
-                        self.stains.add(BloodStain(self))
+                        if Settings.bloodspawn:
+                            self.stains.add(BloodStain(self))
                         self.game_hitcount += 1
                         return
         else:
