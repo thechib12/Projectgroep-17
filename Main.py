@@ -68,7 +68,7 @@ while running:
         """ Update """
 
         """ Draw """
-        popup.draw(screen)
+        # popup.draw(screen)
         pass
     elif GameStateEnum.running == gamestate.getState():
         """ Update """
