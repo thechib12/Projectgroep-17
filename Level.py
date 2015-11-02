@@ -245,12 +245,12 @@ def textOutline(font, message, fontcolor, outlinecolor):
 
 class Popup():
 
-    back = pygame.image.load("resources/images/menu/popup.png")
+    back = pygame.image.load("resources/images/menu/popup.png").convert_alpha()
     back_dimen = [back.get_rect().width, back.get_rect().height]
     pygame.font.init()
     font_title = pygame.font.Font("resources/fonts/LuckiestGuy.ttf", 50)
 
-    btn_back = pygame.image.load("resources/images/menu/button.png")
+    btn_back = pygame.image.load("resources/images/menu/button.png").convert_alpha()
     btn_dimen = [btn_back.get_rect().width, btn_back.get_rect().height]
 
     fnt_normal = pygame.font.Font("resources/fonts/Lato-Regular.ttf", 25)
@@ -295,7 +295,7 @@ class Popup():
 
 class Button(pygame.sprite.Sprite):
 
-    back = pygame.image.load("resources/images/menu/button.png")
+    back = pygame.image.load("resources/images/menu/button.png").convert_alpha()
 
     def __init__(self, type, font, x, y, level, controller):
         super().__init__()
