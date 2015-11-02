@@ -1,4 +1,5 @@
 from enum import Enum
+import threading
 from Cursor import Cursor
 from GameState import *
 
@@ -15,8 +16,9 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
-
-cursor = Cursor()
+lock = threading.Lock()
+cursor = Cursor(lock)
+cursor.start()
 
 pygame.mouse.set_visible(False)
 
