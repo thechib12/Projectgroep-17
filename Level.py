@@ -191,12 +191,14 @@ class BloodStain(pygame.sprite.Sprite):
 
     blood = []
     for i in range(1, 9):
-        blood.append(pygame.image.load("resources/images/blood/blood"+ str(i) + ".png"))
+        blood.append(pygame.image.load("resources/images/blood/blood"+ str(i) + ".png").convert())
+        blood[i-1].set_colorkey((255, 255, 255))
 
     def __init__(self, level):
         super().__init__()
-        self.image = self.blood[randint(0, len(self.blood) - 1)].convert()
-        self.image.set_colorkey((255, 255, 255))
+        # self.image = self.blood[randint(0, len(self.blood) - 1)].convert()
+        # self.image.set_colorkey((255, 255, 255))
+        self.image = self.blood[randint(0, len(self.blood))]
         self.rect = self.image.get_rect()
         self.image.set_alpha(255)
         self.rect.x = randint(0, 1920 - self.rect.width)
