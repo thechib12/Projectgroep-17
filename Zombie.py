@@ -2,6 +2,7 @@ from enum import Enum
 import pygame
 from random import randint
 from pygame.constants import *
+from SharedPreference import Settings
 
 __author__ = 'reneb_000'
 """
@@ -64,6 +65,7 @@ class Zombie(pygame.sprite.Sprite):
         self.attacking = False
         self.dead = False
 
+        # TODO test local vs static
         self.sheet_two_leg = self.zombie_sheet_two_leg
         self.sheet_one_leg = self.zombie_sheet_one_leg
         self.sheet_no_leg = self.zombie_sheet_no_leg
@@ -78,7 +80,7 @@ class Zombie(pygame.sprite.Sprite):
         # frame index calculation
         self.max_index = self.sheet.get_rect().height / self.real_height
         self.index = randint(0, self.max_index - 1)
-
+        self.alpha_count = 255
         # set the frame
         self.sheet.set_clip(pygame.Rect(0, self.index * self.real_height, self.real_width, self.real_height))
 
@@ -102,9 +104,11 @@ class Zombie(pygame.sprite.Sprite):
                 self.sound[randint(0, len(self.sound) - 1)].play()
         else:
             if self.index + 1 == self.max_index:
-                alpha = self.image.get_alpha()
-                if alpha - 2 >= 0:
-                    self.image.set_alpha(alpha - 2)
+                # alpha = self.image.get_alpha()
+                if self.alpha_count - 2 >= 0:
+                    self.alpha_count -= 2
+                    if Settings.fading:
+                        self.image.set_alpha(self.alpha_count)
                 else:
                     self.level.delete_enemy(self)
             else:

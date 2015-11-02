@@ -199,17 +199,20 @@ class BloodStain(pygame.sprite.Sprite):
         super().__init__()
         # self.image = self.blood[randint(0, len(self.blood) - 1)].convert()
         # self.image.set_colorkey((255, 255, 255))
-        self.image = self.blood[randint(0, len(self.blood))]
+        self.image = self.blood[randint(0, len(self.blood)-1)]
         self.rect = self.image.get_rect()
         self.image.set_alpha(255)
+        self.alpha_count = 255
         self.rect.x = randint(0, 1920 - self.rect.width)
         self.rect.y = randint(0, 1080 - self.rect.height)
         self.level = level
 
     def update(self):
-        alpha = self.image.get_alpha()
-        if not alpha - 2 <= 0:
-            self.image.set_alpha(alpha - 2)
+        # alpha = self.image.get_alpha()
+        if not self.alpha_count - 2 <= 0:
+            self.alpha_count -= 2
+            if Settings.fading:
+                self.image.set_alpha(self.alpha_count)
         else:
             self.level.deletestain(self)
 

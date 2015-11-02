@@ -3,8 +3,9 @@ import json
 __author__ = 'reneb_000'
 
 class Settings():
-    bloodspawn = False
+    bloodspawn = True
     play_audio = False
+    fading = False
 
 
 class SharedPreference():
