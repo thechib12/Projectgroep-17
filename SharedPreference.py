@@ -2,6 +2,11 @@ import json
 
 __author__ = 'reneb_000'
 
+class Settings():
+    bloodspawn = False
+    play_audio = False
+
+
 class SharedPreference():
 
     def __init__(self):
