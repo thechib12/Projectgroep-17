@@ -189,12 +189,14 @@ class xyGetter(threading.Thread):
             elif self.last_y > 45:
                 self.last_y = 45
             """
-            len = math.tan(math.radians(self.last_y))*1080
-            y = len
-            #y = len - (math.cos(math.radians(math.fabs(self.last_x)))*len)
-            x = 960 + len * math.sin(math.radians(self.last_x))
+            lx = self.last_x-self.beginx
+            ly = self.last_y-self.beginy
+            len = math.tan(math.radians(ly))*1080
+            #y = len
+            y = len - (math.cos(math.radians(math.fabs(lx)))*len)
+            x = 960 + len * math.sin(math.radians(lx))
             self.cursor.set_pos_toset([x, y])
 
-            print("{0:.2f} {1:.2f} {2:.2f} {2:.2f}".format(self.last_x, self.last_y, x, y))
+            print("{0:.2f} {1:.2f} {2:.2f} {2:.2f}".format(lx, ly, x, y))
 
 
