@@ -168,7 +168,7 @@ class xyGetter(threading.Thread):
 
             self.cursor.set_pos_toset([x, y])
 
-            print("{0:.2f} {1:.2f}".format(self.last_x, self.last_y))
+            print("{0:.2f} {1:.2f} {2:.2f} {3:.2f}".format(self.last_x, self.last_y, calibrated_x, calibrated_y))
         pass
 
 
