@@ -77,7 +77,128 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.image = image
 
 
-""" getting date from sensor """
+
+
+import smbus
+import math
+import time
+
+class xyGetter(threading.Thread):
+
+    def __init__(self, cursor):
+        threading.Thread.__init__(self)
+        self.cursor = cursor
+
+        # Power management registers
+        self.power_mgmt_1 = 0x6b
+        self.power_mgmt_2 = 0x6c
+
+        self.gyro_scale = 131.0
+        self.accel_scale = 16384.0
+
+        self.address = 0x68  # This is the address value read via the i2cdetect command
+
+        self.bus = smbus.SMBus(0)  # or bus = smbus.SMBus(1) for Revision 2 boards
+
+        # Now wake the 6050 up as it starts in sleep mode
+        self.bus.write_byte_data(self.address, self.power_mgmt_1, 0)
+
+        self.now = time.time()
+
+        self.K = 0.98
+        self.K1 = 1 - self.K
+
+        self.time_diff = 0.01
+
+        (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.read_all()
+
+        self.last_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        self.last_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+
+        self.gyro_offset_x = gyro_scaled_x
+        self.gyro_offset_y = gyro_scaled_y
+
+        self.gyro_total_x = (self.last_x) - self.gyro_offset_x
+        self.gyro_total_y = (self.last_y) - self.gyro_offset_y
+
+        # print("{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (last_x), gyro_total_x, (last_x), (last_y), gyro_total_y, (last_y)))
+        # TODO PRINT SHIT
+
+    def run(self):
+        for i in range(0, int(3.0 / self.time_diff)):
+            time.sleep(self.time_diff - 0.005)
+
+            (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.read_all()
+
+            gyro_scaled_x -= self.gyro_offset_x
+            gyro_scaled_y -= self.gyro_offset_y
+
+            gyro_x_delta = (gyro_scaled_x * self.time_diff)
+            gyro_y_delta = (gyro_scaled_y * self.time_diff)
+
+            self.gyro_total_x += gyro_x_delta
+            self.gyro_total_y += gyro_y_delta
+
+            rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+            rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+
+            self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
+
+            # print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y))
+            print("last_x: {1:.2f} last_y: {2:.2f}".format(self.last_x, self.last_y))
+        pass
+
+
+
+
+
+    def read_all(self):
+        raw_gyro_data = self.bus.read_i2c_block_data(self.address, 0x43, 6)
+        raw_accel_data = self.bus.read_i2c_block_data(self.address, 0x3b, 6)
+
+        gyro_scaled_x = self.twos_compliment((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / self.gyro_scale
+        gyro_scaled_y = self.twos_compliment((raw_gyro_data[2] << 8) + raw_gyro_data[3]) / self.gyro_scale
+        gyro_scaled_z = self.twos_compliment((raw_gyro_data[4] << 8) + raw_gyro_data[5]) / self.gyro_scale
+
+        accel_scaled_x = self.twos_compliment((raw_accel_data[0] << 8) + raw_accel_data[1]) / self.accel_scale
+        accel_scaled_y = self.twos_compliment((raw_accel_data[2] << 8) + raw_accel_data[3]) / self.accel_scale
+        accel_scaled_z = self.twos_compliment((raw_accel_data[4] << 8) + raw_accel_data[5]) / self.accel_scale
+
+        return (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z)
+
+    def twos_compliment(self, val):
+        if (val >= 0x8000):
+            return -((65535 - val) + 1)
+        else:
+            return val
+
+    def dist(self, a, b):
+        return math.sqrt((a * a) + (b * b))
+
+
+    def get_y_rotation(self, x,y,z):
+        radians = math.atan2(x, self.dist(y,z))
+        return -math.degrees(radians)
+
+    def get_x_rotation(self, x,y,z):
+        radians = math.atan2(y, self.dist(x,z))
+        return math.degrees(radians)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+""" getting date from sensor
 import smbus
 import math
 import time
@@ -144,7 +265,7 @@ class xyGetter(threading.Thread):
     time_diff = 0.01
 
 
-    (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(bus, address, gyro_scale, accel_scale)
+    (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(bus, address, gyro_scale_x, accel_scale)
 
     last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
     last_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
@@ -187,12 +308,12 @@ class xyGetter(threading.Thread):
             self.last_x = (self.last_x + gyro_x_delta)
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
-            """"
+
             if self.last_y < 0 :
                 self.last_y = 0
             elif self.last_y > 45:
                 self.last_y = 45
-            """
+
             lx = self.last_x-self.beginx
             ly = self.last_y-self.beginy
             len = math.tan(math.radians(ly))*1080
@@ -204,3 +325,4 @@ class xyGetter(threading.Thread):
             print("{0:.2f} {1:.2f} {2:.2f} {2:.2f}".format(lx, ly, x, y))
 
 
+"""
