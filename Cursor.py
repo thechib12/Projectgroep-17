@@ -186,9 +186,11 @@ class xyGetter(threading.Thread):
             elif self.last_y > 45:
                 self.last_y = 45
             """
-            y = math.tan(math.radians(self.last_y))*1080
-            self.cursor.set_pos_toset([1920/2, y])
+            len = math.tan(math.radians(self.last_y))*1080
+            y = len - math.cos(math.radians(self.last_x))*len
+            x = 540 + len * math.sin(math.radians(self.last_x))
+            self.cursor.set_pos_toset([x, y])
 
-            print("{0:.2f} {1:.2f} {2:.2f}".format(self.last_x, self.last_y, y))
+            print("{0:.2f} {1:.2f} {2:.2f} {2:.2f}".format(self.last_x, self.last_y, x, y))
 
 
