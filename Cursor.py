@@ -193,7 +193,7 @@ class xyGetter(threading.Thread):
             ly = self.last_y-self.beginy
             len = math.tan(math.radians(ly))*1080
             #y = len
-            y = len - (math.cos(math.radians(math.fabs(lx)))*len)
+            y = 1080 - len - (math.cos(math.radians(math.fabs(lx)))*len)
             x = 960 + len * math.sin(math.radians(lx))
             self.cursor.set_pos_toset([x, y])
 
