@@ -180,7 +180,8 @@ class xyGetter(threading.Thread):
             rotation_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
             rotation_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
-            self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            # self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            self.last_x = (self.last_x + gyro_x_delta)
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
             """"
