@@ -46,7 +46,8 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.lock.release()
         """
         # return val
-        return [self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2 + self.recoil]
+        # return [self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2 + self.recoil]
+        return [self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2]
 
     def update(self):
         # pos = pygame.mouse.get_pos()

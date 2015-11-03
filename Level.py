@@ -160,6 +160,7 @@ class Level:
         self.game_legs_shot_off = 0
         self.game_headshots = 0
         self.game_shotsfired = 0
+        self.game_hitcount = 0
         self.game_time = datetime.datetime.now().replace(microsecond=0)
 
     def addRowsToPopup(self, popup):
