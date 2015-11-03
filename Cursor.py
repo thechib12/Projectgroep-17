@@ -158,7 +158,7 @@ class xyGetter(threading.Thread):
             calibrated_x = self.last_x - self.calx
             calibrated_y = self.last_y - self.caly
 
-            x = 960 + math.tan(math.radians(self.last_x*10)) * 1920
+            x = 960 + math.tan(math.radians(self.last_x*10)) * 1080
             y = 540 + math.tan(math.radians(self.last_y)) * 1080
 
             self.cursor.set_pos_toset([x, y])
