@@ -177,11 +177,12 @@ class xyGetter(threading.Thread):
             self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
+            """"
             if self.last_y < 0 :
                 self.last_y = 0
             elif self.last_y > 45:
                 self.last_y = 45
-
+            """
             y = math.tan(self.last_y)*1080
             self.cursor.set_pos_toset([1920/2, y])
 
