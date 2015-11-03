@@ -125,7 +125,8 @@ class xyGetter(threading.Thread):
         # TODO PRINT SHIT
 
     def run(self):
-        for i in range(0, int(3.0 / self.time_diff)):
+        # for i in range(0, int(3.0 / self.time_diff)):
+        while True:
             time.sleep(self.time_diff - 0.005)
 
             (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.read_all()
