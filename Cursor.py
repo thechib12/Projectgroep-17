@@ -113,10 +113,12 @@ class xyGetter(threading.Thread):
         (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.read_all()
 
         self.last_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-        self.last_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        # self.last_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        self.last_y = self.get_z_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
         self.gyro_offset_x = gyro_scaled_x
-        self.gyro_offset_y = gyro_scaled_y
+        # self.gyro_offset_y = gyro_scaled_y
+        self.gyro_offset_y = gyro_scaled_z
 
         self.gyro_total_x = (self.last_x) - self.gyro_offset_x
         self.gyro_total_y = (self.last_y) - self.gyro_offset_y
@@ -137,17 +139,20 @@ class xyGetter(threading.Thread):
             (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.read_all()
 
             gyro_scaled_x -= self.gyro_offset_x
-            gyro_scaled_y -= self.gyro_offset_y
+            # gyro_scaled_y -= self.gyro_offset_y
+            gyro_scaled_z -= self.gyro_offset_y
 
             # gyro_x_delta = (gyro_scaled_x * self.time_diff)
             gyro_x_delta = (gyro_scaled_x * self.gyro_sample)
-            gyro_y_delta = (gyro_scaled_y * self.time_diff)
+            # gyro_y_delta = (gyro_scaled_y * self.time_diff)
+            gyro_y_delta = (gyro_scaled_z * self.time_diff)
 
             self.gyro_total_x += gyro_x_delta
             self.gyro_total_y += gyro_y_delta
 
             rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-            rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+            # rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+            rotation_y = self.get_z_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
             # self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
             self.last_x = self.gyro_total_x
@@ -202,6 +207,9 @@ class xyGetter(threading.Thread):
         radians = math.atan2(y, self.dist(x,z))
         return math.degrees(radians)
 
+    def get_z_rotation(self, x,y,z):
+        radians = math.atan2(self.dist(x,y), z)
+        return math.degrees(radians)
 
 
 
