@@ -33,7 +33,7 @@ shop = Shop(cursor, gamestate)
 
 
 def shoot():
-    pygame.quit()
+    # pygame.quit()
     pos = cursor.getXY()
     if GameStateEnum.mainmenu == gamestate.getState():
         popup.click(pos[0], pos[1])
@@ -56,7 +56,10 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            shoot()
+            if event.button == 1:
+                shoot()
+            else:
+                pygame.quit()
 
 
     cursor.update()
