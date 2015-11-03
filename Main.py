@@ -33,6 +33,7 @@ shop = Shop(cursor, gamestate)
 
 
 def shoot():
+    pygame.quit()
     pos = cursor.getXY()
     if GameStateEnum.mainmenu == gamestate.getState():
         popup.click(pos[0], pos[1])
