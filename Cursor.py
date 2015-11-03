@@ -141,7 +141,8 @@ class xyGetter(threading.Thread):
     K1 = 1 - K
 
     # error may happen here in time_diff assigning
-    time_diff = 0.05
+    time_diff = 0.01
+
 
     (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(bus, address, gyro_scale, accel_scale)
 
@@ -160,6 +161,8 @@ class xyGetter(threading.Thread):
 
     def run(self):
         while True:
+            time.sleep(self.time_diff - 0.005)
+
             (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(self.bus, self.address, self.gyro_scale, self.accel_scale)
 
             gyro_scaled_x -= self.gyro_offset_x
@@ -187,5 +190,5 @@ class xyGetter(threading.Thread):
             self.cursor.set_pos_toset([1920/2, y])
 
             print("{0:.2f} {1:.2f} {2:.2f}".format(self.last_x, self.last_y, y))
-            time.sleep(0.05)
+
 
