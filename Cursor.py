@@ -149,6 +149,9 @@ class xyGetter(threading.Thread):
     last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
     last_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
+    beginx = last_x
+    beginy = last_y
+
     gyro_offset_x = gyro_scaled_x
     gyro_offset_y = gyro_scaled_y
 
@@ -188,7 +191,7 @@ class xyGetter(threading.Thread):
             """
             len = math.tan(math.radians(self.last_y))*1080
             # y = len - math.cos(math.radians(self.last_x))*len
-            y = len - math.fabs(math.cos(math.radians(self.last_x))*len)
+            y = len - (math.cos(math.radians(math.fabs(self.last_x)))*len)
             x = 960 + len * math.sin(math.radians(self.last_x))
             self.cursor.set_pos_toset([x, y])
 
