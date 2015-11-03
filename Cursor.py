@@ -146,7 +146,7 @@ class xyGetter(threading.Thread):
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
             # print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y))
-            print("last_x: {1:.2f} last_y: {2:.2f}".format(self.last_x, self.last_y))
+            print("{0:.2f} {1:.2f}".format(self.last_x, self.last_y))
         pass
 
 
