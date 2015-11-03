@@ -174,17 +174,17 @@ class xyGetter(threading.Thread):
             rotation_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
             rotation_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
-            last_x = self.K * (last_x + gyro_x_delta) + (self.K1 * rotation_x)
-            last_y = self.K * (last_y + gyro_y_delta) + (self.K1 * rotation_y)
+            self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
-            if last_y < 0 :
-                last_y = 0
-            elif last_y > 45:
-                last_y = 45
+            if self.last_y < 0 :
+                self.last_y = 0
+            elif self.last_y > 45:
+                self.last_y = 45
 
-            y = math.tan(last_y)*1080
+            y = math.tan(self.last_y)*1080
             self.cursor.set_pos_toset([1920/2, y])
 
-            print("{0:.2f} {1:.2f} {2:.2f}".format(last_x, last_y, y))
+            print("{0:.2f} {1:.2f} {2:.2f}".format(self.last_x, self.last_y, y))
             time.sleep(0.05)
 
