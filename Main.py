@@ -18,7 +18,7 @@ screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 lock = threading.Lock()
 cursor = Cursor(lock)
-cursor.start()
+# cursor.start()
 
 pygame.mouse.set_visible(False)
 
