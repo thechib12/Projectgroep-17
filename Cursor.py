@@ -121,6 +121,8 @@ class xyGetter(threading.Thread):
         self.gyro_total_x = (self.last_x) - self.gyro_offset_x
         self.gyro_total_y = (self.last_y) - self.gyro_offset_y
 
+        self.gyro_sample = 1/8000
+
         # print("{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (last_x), gyro_total_x, (last_x), (last_y), gyro_total_y, (last_y)))
         # TODO PRINT SHIT
 
@@ -134,7 +136,8 @@ class xyGetter(threading.Thread):
             gyro_scaled_x -= self.gyro_offset_x
             gyro_scaled_y -= self.gyro_offset_y
 
-            gyro_x_delta = (gyro_scaled_x * self.time_diff)
+            # gyro_x_delta = (gyro_scaled_x * self.time_diff)
+            gyro_x_delta = (gyro_scaled_x * self.gyro_sample)
             gyro_y_delta = (gyro_scaled_y * self.time_diff)
 
             self.gyro_total_x += gyro_x_delta
@@ -143,7 +146,8 @@ class xyGetter(threading.Thread):
             rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
             rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
-            self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            # self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
+            self.last_x = self.gyro_total_x
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
 
             # print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y))
