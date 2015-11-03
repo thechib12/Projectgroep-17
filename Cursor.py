@@ -156,10 +156,10 @@ class xyGetter(threading.Thread):
             # print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y))
 
             calibrated_x = self.last_x - self.calx
-            calibrated_y = self.last_y - self.caly - 90
+            calibrated_y = self.last_y - self.caly
 
-            x = 960 + math.tan(math.radians(self.last_x*10)) * 1080
-            y = 540 + math.tan(math.radians(self.last_y)) * 1080
+            x = 960 + math.tan(math.radians(calibrated_x*10)) * 1080
+            y = 540 + math.tan(math.radians(calibrated_y)) * 1080
 
             self.cursor.set_pos_toset([x, y])
 
