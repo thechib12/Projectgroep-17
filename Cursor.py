@@ -76,6 +76,9 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
     def set_image(self, image):
         self.image = image
 
+    def calibrate(self):
+        self.getter.calibrate()
+
 
 
 
@@ -88,6 +91,7 @@ class xyGetter(threading.Thread):
     def __init__(self, cursor):
         threading.Thread.__init__(self)
         self.cursor = cursor
+        self.lock = threading.Lock()
 
         # Power management registers
         self.power_mgmt_1 = 0x6b
@@ -131,6 +135,13 @@ class xyGetter(threading.Thread):
         # print("{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (last_x), gyro_total_x, (last_x), (last_y), gyro_total_y, (last_y)))
         # TODO PRINT SHIT
 
+
+    def calibrate(self):
+        self.lock.acquire()
+        self.calx = self.last_x
+        self.caly = self.last_y
+        self.lock.release()
+
     def run(self):
         # for i in range(0, int(3.0 / self.time_diff)):
         while True:
@@ -154,6 +165,8 @@ class xyGetter(threading.Thread):
             # rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
             rotation_y = self.get_z_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
+
+            self.lock.acquire()
             # self.last_x = self.K * (self.last_x + gyro_x_delta) + (self.K1 * rotation_x)
             self.last_x = self.gyro_total_x
             self.last_y = self.K * (self.last_y + gyro_y_delta) + (self.K1 * rotation_y)
@@ -165,10 +178,11 @@ class xyGetter(threading.Thread):
 
             x = 960 + math.tan(math.radians(calibrated_x*100)) * 1080
             y = 540 + math.tan(math.radians(calibrated_y)) * 1080
-
+            print("{0:.2f} {1:.2f} {2:.2f} {3:.2f}".format(self.last_x, self.last_y, calibrated_x, calibrated_y))
+            self.lock.release()
             self.cursor.set_pos_toset([x, y])
 
-            print("{0:.2f} {1:.2f} {2:.2f} {3:.2f}".format(self.last_x, self.last_y, calibrated_x, calibrated_y))
+
         pass
 
 

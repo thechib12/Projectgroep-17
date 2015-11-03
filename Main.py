@@ -45,6 +45,7 @@ def shoot():
 
 
 """ Game Loop """
+# 0 = left, 1 = middle, 2 = right
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -56,9 +57,12 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
+            array = pygame.mouse.get_pressed()
+            if array[0]:
                 shoot()
-            else:
+            if array[1]:
+                cursor.calibrate()
+            if array[2]:
                 pygame.quit()
 
 
