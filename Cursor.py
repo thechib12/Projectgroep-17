@@ -158,6 +158,8 @@ class xyGetter(threading.Thread):
     gyro_total_x = (last_x) - gyro_offset_x
     gyro_total_y = (last_y) - gyro_offset_y
 
+    gyro_sample_rate = 1/8000
+
     def __init__(self, cursor):
         threading.Thread.__init__(self)
         self.cursor = cursor
@@ -171,7 +173,8 @@ class xyGetter(threading.Thread):
             gyro_scaled_x -= self.gyro_offset_x
             gyro_scaled_y -= self.gyro_offset_y
 
-            gyro_x_delta = (gyro_scaled_x * self.time_diff)
+            # gyro_x_delta = (gyro_scaled_x * self.time_diff)
+            gyro_x_delta = (gyro_scaled_x * self.gyro_sample_rate)
             gyro_y_delta = (gyro_scaled_y * self.time_diff)
 
             self.gyro_total_x += gyro_x_delta
@@ -193,10 +196,9 @@ class xyGetter(threading.Thread):
             lx = self.last_x-self.beginx
             ly = self.last_y-self.beginy
             len = math.tan(math.radians(ly))*1080
-            #y = len
             y = len - (math.cos(math.radians(math.fabs(lx)))*len)
-            x = 960 - lx
             #x = 960 + len * math.sin(math.radians(lx))
+            x = 960
             self.cursor.set_pos_toset([x, y])
 
             print("{0:.2f} {1:.2f} {2:.2f} {2:.2f}".format(lx, ly, x, y))
