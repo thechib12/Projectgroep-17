@@ -122,6 +122,8 @@ class xyGetter(threading.Thread):
         self.cursor = cursor
         self.lock = threading.Lock()
 
+        self.len = 2160
+
         # Power management registers
         self.power_mgmt_1 = 0x6b
         self.power_mgmt_2 = 0x6c
@@ -205,8 +207,8 @@ class xyGetter(threading.Thread):
             calibrated_x = self.last_x - self.calx
             calibrated_y = self.last_y - self.caly
 
-            x = 960 + math.tan(math.radians(calibrated_x*100)) * 1080
-            y = 540 + math.tan(math.radians(calibrated_y)) * 1080
+            x = 960 + math.tan(math.radians(calibrated_x*100)) * self.len
+            y = 540 + math.tan(math.radians(calibrated_y)) * self.len
             # print("{0:.2f} {1:.2f} {2:.2f} {3:.2f}".format(self.last_x, self.last_y, calibrated_x, calibrated_y))
             self.lock.release()
             self.cursor.set_pos_toset([x, y])
