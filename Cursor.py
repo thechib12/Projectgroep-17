@@ -72,7 +72,9 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
             self.shoot_lock.acquire()
             self.toshoot = False
             self.shoot_lock.release()
-            self.shoot_obj.shootMain()
+            # self.shoot_obj.shootMain()
+            import Main
+            Main.shoot()
         if self.shot and self.recoil >= 6:
             self.recoil -= 6
         else:
