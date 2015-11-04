@@ -1,7 +1,7 @@
 import threading
 from time import sleep
 import pygame
-from ShootObject import ShootObj
+# from ShootObject import ShootObj
 
 __author__ = 'reneb_000'
 
@@ -26,13 +26,13 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.recoil = 0
 
         self.toshoot = False
-        self.shoot_obj = ShootObj()
+        # self.shoot_obj = ShootObj()
         self.shoot_lock = threading.Lock()
 
         self.getter = xyGetter(self)
         self.getter.start()
 
-        self.buttongetter = ButtonGetter(self)
+        # self.buttongetter = ButtonGetter(self)
 
     def run(self):
         while True:
