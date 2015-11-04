@@ -5,7 +5,7 @@ from GameState import *
 
 from Level import Level, Popup, PopupType
 import pygame
-from ShootObject import ShootObj
+
 from ShopEntry import Shop
 
 pygame.init
@@ -18,7 +18,7 @@ screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
 lock = threading.Lock()
-cursor = Cursor(lock, ShootObj())
+cursor = Cursor(lock)
 # cursor.start()
 
 pygame.mouse.set_visible(False)
@@ -103,7 +103,7 @@ while running:
 
 pygame.quit()
 
-
+# prob junk code
 def set_game_state(state):
     global gamestate
     gamestate = state
