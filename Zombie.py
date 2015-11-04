@@ -49,7 +49,7 @@ class Zombie(pygame.sprite.Sprite):
         sound.append(pygame.mixer.Sound("resources/sounds/enemy/sound" + str(i) + ".ogg"))
         sound[i-1].set_volume(0.5)
 
-    def __init__(self, y, layer, levelobj):
+    def __init__(self, y, layer, levelobj, speed):
         # init pygame sprite class
         super().__init__()
         self.level = levelobj
@@ -60,7 +60,7 @@ class Zombie(pygame.sprite.Sprite):
         self.max_soundcount = 80
         self.frame_counter = 0
         self.state = State.twoLeg
-        self.speed = 2
+        self.speed = speed
         self.layer = layer
         self.attacking = False
         self.dead = False

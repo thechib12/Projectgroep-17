@@ -59,7 +59,7 @@ class Level:
                 self.txt_remaining = self.font.render("Wave remaining: " + str(self.count), True, fnt_color)
                 rand = randint(0, 2)
                 val = rand * 130 + 500
-                zombie = Zombie(val, rand, self)
+                zombie = Zombie(val, rand, self, 2*self.wave)
                 self.enemies[rand].add(zombie)
             if self.count == 0 and self.no_enemies_left():
                 self.wave += 1
