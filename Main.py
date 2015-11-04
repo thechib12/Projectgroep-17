@@ -5,6 +5,7 @@ from GameState import *
 
 from Level import Level, Popup, PopupType
 import pygame
+from ShootObject import ShootObj
 from ShopEntry import Shop
 
 pygame.init
@@ -17,7 +18,7 @@ screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
 lock = threading.Lock()
-cursor = Cursor(lock)
+cursor = Cursor(lock, ShootObj())
 # cursor.start()
 
 pygame.mouse.set_visible(False)
