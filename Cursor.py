@@ -26,8 +26,10 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.recoil = 0
 
         self.toshoot = False
+        self.shoot_released = True
         # self.shoot_obj = ShootObj()
         self.shoot_lock = threading.Lock()
+        self.shoot_released_lock = threading.Lock()
 
         self.getter = xyGetter(self)
         self.getter.start()
@@ -68,10 +70,13 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         # self.setXY(pos[0], pos[1])
         self.setXY(self.pos_toset[0], self.pos_toset[1])
         self.lock.release()
-        if self.toshoot:
+        if self.toshoot and self.shoot_released:
             self.shoot_lock.acquire()
             self.toshoot = False
             self.shoot_lock.release()
+            self.shoot_released_lock.acquire()
+            self.shoot_released = False
+            self.shoot_released_lock.release()
             # self.shoot_obj.shootMain()
             import Main
             Main.shoot()
@@ -100,6 +105,10 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.toshoot = True
         self.shoot_lock.release()
 
+    def set_released(self):
+        self.shoot_released_lock.acquire()
+        self.shoot_released = True
+        self.shoot_released_lock.release()
 
 
 import smbus
@@ -257,9 +266,14 @@ class ButtonGetter(threading.Thread):
         wiringpi.pinMode(17, 0)
         self.cursor = cursor
         self.start()
+        self.shot = False
 
     def run(self):
         while True:
             time.sleep(0.01)
             if wiringpi.digitalRead(17) > 0:
                 self.cursor.set_to_shoot()
+                self.shot = True
+            elif self.shot == True:
+                self.cursor.set_released()
+                self.shot = False
