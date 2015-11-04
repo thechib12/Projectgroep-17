@@ -32,7 +32,7 @@ class Cursor(pygame.sprite.Sprite, threading.Thread):
         self.getter = xyGetter(self)
         self.getter.start()
 
-        # self.buttongetter = ButtonGetter(self)
+        self.buttongetter = ButtonGetter(self)
 
     def run(self):
         while True:
